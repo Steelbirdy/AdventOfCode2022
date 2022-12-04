@@ -1,4 +1,12 @@
-import utils
+from ..utils import aoc
+
+
+fmt = '{}'
+kwargs = {
+    'sep': '\n',
+    'meta_sep': None,
+    'case_sensitive': False,
+}
 
 
 def priority(c):
@@ -8,11 +16,13 @@ def priority(c):
         return ord(c) - ord('A') + 27
 
 
+@aoc(fmt, **kwargs)
 def part1(inp: list[str]) -> int:
     sacks = [set(line[:len(line) // 2]) & set(line[len(line) // 2:]) for line in inp]
     return sum(priority(c.pop()) for c in sacks)
 
 
+@aoc(fmt, **kwargs)
 def part2(inp: list[str]) -> int:
     badges = []
     for i, line in enumerate(inp):
@@ -21,7 +31,3 @@ def part2(inp: list[str]) -> int:
         else:
             badges[-1] &= set(line)
     return sum(priority(b.pop()) for b in badges)
-
-
-if __name__ == '__main__':
-    utils.aoc(part1, part2)
