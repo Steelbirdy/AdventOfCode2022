@@ -3,7 +3,7 @@ from ..utils import aoc
 
 fmt = '{}'
 kwargs = {
-    'sep': '\n',
+    'sep': None,
     'meta_sep': None,
     'case_sensitive': False,
 }
@@ -11,9 +11,13 @@ kwargs = {
 
 @aoc(fmt, **kwargs)
 def part1(inp) -> int:
-    return NotImplemented
+    return inp.count('(') - inp.count(')')
 
 
 @aoc(fmt, **kwargs)
 def part2(inp) -> int:
-    return NotImplemented
+    flr = 0
+    for i, c in enumerate(inp):
+        flr += 1 if c == '(' else -1
+        if flr < 0:
+            return i + 1

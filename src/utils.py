@@ -1,3 +1,4 @@
+import inspect
 import parse
 from typing import Any, Callable, Optional, TypeVar, Union
 
@@ -8,6 +9,7 @@ _Out = TypeVar('_Out')
 
 def __aoc_decorator(func: Callable[[_In], _Out], fmt: Optional[str], sep: Optional[str], meta_sep: Optional[str], case_sensitive: bool):
     def decorated(inp: str) -> _Out:
+        raw_inp = inp
         unnest = 0
         if meta_sep is None:
             inp = [inp]
@@ -31,6 +33,9 @@ def __aoc_decorator(func: Callable[[_In], _Out], fmt: Optional[str], sep: Option
         for _ in range(unnest):
             res = res[0]
         res: _In
+
+        if len(inspect.signature(func).parameters) == 2:
+            return func(res, raw_inp)
         return func(res)
     return decorated
 
