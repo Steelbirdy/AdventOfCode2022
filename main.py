@@ -18,22 +18,26 @@ _year_folder = os.getenv('AOC_FOLDER_FORMAT').format(year=_year)
 cmd = None
 
 
+class Exit(Exception):
+    pass
+
+
 def get_day(day: Optional[int]) -> int:
     if day is None:
         today = datetime.now(tz=timezone(timedelta(hours=-5)))
         if today.month != 12:
             print("You specify the day number in months other than December.")
-            raise ValueError
+            raise Exit
         day = today.day
         if day > 24:
             print("You must specify the day number after advent ends.")
-            raise ValueError
+            raise Exit
         if day != 24 and today.hour == 23 and cmd == 'init':
             day = day - 1
 
     if not (1 <= day <= 24):
         print("Invalid day, must be between 1 and 24 inclusive.")
-        raise ValueError
+        raise Exit
     return day
 
 
@@ -44,11 +48,12 @@ def retrieve_aoc_input(day: int, dest: Optional[Path] = None):
     session_token = os.getenv('AOC_SESSION_TOKEN')
     if session_token == "your-session-token-here":
         print('You need to put your session token into the `.env` file!')
-        raise ValueError
+        raise Exit
 
     response = requests.get(f"https://adventofcode.com/{_year}/day/{day}/input", cookies={'session': session_token})
     if response.status_code != 200:
-        raise ValueError(str(response.content))
+        print(f'Error retrieving puzzle input: {response.status_code}')
+        raise Exit
     text = response.text
     if dest is not None:
         with open(dest, mode='w') as fp:
@@ -153,6 +158,5 @@ def main(args):
 if __name__ == '__main__':
     try:
         main(sys.argv[1:])
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exit:
         show_usage()
