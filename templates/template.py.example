@@ -1,7 +1,7 @@
 from ..utils import aoc
 
 
-fmt = ''
+fmt = '{}'
 kwargs = {
     'sep': '\n',
     'meta_sep': None,

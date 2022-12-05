@@ -1,5 +1,27 @@
+import inspect
 import parse
 from typing import Any, Callable, Optional, TypeVar, Union
+
+
+def next_permutation(x: list, lt=...):
+    N = len(x)
+    if lt is ...:
+        lt = lambda a, b: a < b
+
+    i = 0
+    j = 0
+    for i in range(N - 2, -1, -1):
+        if lt(x[i], x[i+1]):
+            break
+
+    if i < 0:
+        x.reverse()
+    else:
+        for j in range(N - 1, i, -1):
+            if lt(x[i], x[j]):
+                break
+        x[i], x[j] = x[j], x[i]
+        x[i+1:N] = x[i+1:N][::-1]
 
 
 _In = TypeVar('_In')
@@ -9,6 +31,7 @@ _Out = TypeVar('_Out')
 def __aoc_decorator(func: Callable[[_In], _Out], fmt: Optional[str], sep: Optional[str], meta_sep: Optional[str], case_sensitive: bool):
     def decorated(inp: str) -> _Out:
         unnest = 0
+        raw_inp = inp
         if meta_sep is None:
             inp = [inp]
             unnest += 1
@@ -31,6 +54,9 @@ def __aoc_decorator(func: Callable[[_In], _Out], fmt: Optional[str], sep: Option
         for _ in range(unnest):
             res = res[0]
         res: _In
+
+        if len(inspect.signature(func).parameters) == 2:
+            return func(res, raw_inp)
         return func(res)
     return decorated
 
